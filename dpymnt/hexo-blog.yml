@@ -1,0 +1,65 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hexing
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hexing
+  template:
+    metadata:
+      labels:
+        app: hexing
+    spec:
+      containers:
+      - image: gcr.io/jcloud-gce/github-joway-hexing:170a6e212dd1d8774027a667dd7fe299f2cd6b19
+        imagePullPolicy: IfNotPresent
+        name: hexing
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hexing-svc
+  namespace: app
+spec:
+  selector:
+    app: hexing
+  ports:
+  - name: http
+    # protocol: tcp
+    port: 80
+    targetPort: 80
+  - name: https
+    # protocol: tcp
+    port: 443
+    targetPort: 80
+  # type: LoadBalancer
+# ---
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: hexing-ingress
+#   namespace: app
+# spec:
+#   backend:
+#     serviceName: hexing-svc
+#     servicePort: 80

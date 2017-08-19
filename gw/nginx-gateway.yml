@@ -1,0 +1,60 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-gateway
+  namespace: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-gateway
+  template:
+    metadata:
+      labels:
+        app: nginx-gateway
+    spec:
+      containers:
+      - image: gcr.io/jcloud-gce/github-joway-nginx:cfde9c395c1375a8bbb74777b12d3f42060704a6
+        imagePullPolicy: IfNotPresent
+        name: nginx-gateway
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        ports:
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-gateway-svc
+  namespace: app
+spec:
+  selector:
+    app: nginx-gateway
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    nodePort: 30080
+  - name: https
+    port: 443
+    targetPort: 443
+    nodePort: 30443
+  type: LoadBalancer

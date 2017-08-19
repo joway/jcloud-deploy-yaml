@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sh-mark
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sh-mark
+  template:
+    metadata:
+      labels:
+        app: sh-mark
+    spec:
+      containers:
+      - image: gcr.io/jcloud-gce/github-joway-sh-mark:a6a75ab0c62adea886425044a85f0873c054086f
+        imagePullPolicy: IfNotPresent
+        name: sh-mark
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sh-mark-svc
+  namespace: app
+spec:
+  selector:
+    app: sh-mark
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: https
+    port: 443
+    targetPort: 80

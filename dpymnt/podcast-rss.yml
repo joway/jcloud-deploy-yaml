@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: podcast-rss
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: podcast-rss
+  template:
+    metadata:
+      labels:
+        app: podcast-rss
+    spec:
+      containers:
+      - image: gcr.io/jcloud-gce/github-joway-podcast-rss:9f6255d99c3cb83d84133ffc530eeb3234f3f27c
+        imagePullPolicy: IfNotPresent
+        name: podcast-rss
+        ports:
+        - name: web
+          containerPort: 8000
+          protocol: TCP
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: podcast-rss-svc
+  namespace: app
+spec:
+  selector:
+    app: podcast-rss
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000

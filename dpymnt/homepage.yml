@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: homepage
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homepage
+  template:
+    metadata:
+      labels:
+        app: homepage
+    spec:
+      containers:
+      - image: gcr.io/jcloud-gce/github-joway-homepage:893d23eb7f157245310d33f4c8e04e4b43d8ac0c
+        imagePullPolicy: IfNotPresent
+        name: homepage
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage-svc
+  namespace: app
+spec:
+  selector:
+    app: homepage
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: https
+    port: 443
+    targetPort: 80

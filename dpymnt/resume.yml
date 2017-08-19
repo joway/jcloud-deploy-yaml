@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: resume
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume
+  template:
+    metadata:
+      labels:
+        app: resume
+    spec:
+      containers:
+      - image: gcr.io/jcloud-gce/github-joway-resume:1fb95021a24e2d608204f124aeb1ac449bd0ed92
+        imagePullPolicy: IfNotPresent
+        name: resume
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-svc
+  namespace: app
+spec:
+  selector:
+    app: resume
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: https
+    port: 443
+    targetPort: 80
