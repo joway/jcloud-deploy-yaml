@@ -14,23 +14,9 @@ spec:
         app: nginx-gateway
     spec:
       containers:
-      - image: gcr.io/jcloud-gce/github-joway-nginx:cfde9c395c1375a8bbb74777b12d3f42060704a6
+      - image: gcr.io/jcloud-gce/github-joway-nginx:b20827473da7abf0d3cb4f06921542cba0cff6f5
         imagePullPolicy: IfNotPresent
         name: nginx-gateway
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-            scheme: HTTP
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-            scheme: HTTP
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
         ports:
         - name: https
           containerPort: 443
@@ -57,4 +43,4 @@ spec:
     port: 443
     targetPort: 443
     nodePort: 30443
-  type: LoadBalancer
+  type: NodePort

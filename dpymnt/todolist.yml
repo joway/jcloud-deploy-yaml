@@ -1,0 +1,106 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: todolist-api
+  name: todolist-api
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todolist-api
+  template:
+    metadata:
+      labels:
+        app: todolist-api
+    spec:
+      containers:
+      - env:
+        - name: MODE
+          value: API
+        - name: SQLITE3_LOCATION
+          value: /db
+        image: gcr.io/jcloud-gce/github-joway-django-todolist-demo-api:0565c90af7d5f3bc99cfa10d8e23a71abe1d4165
+        name: todolist-api
+        ports:
+        - containerPort: 8000
+          name: api
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /db
+          name: db
+      - env:
+        - name: MODE
+          value: STATIC
+        image: gcr.io/jcloud-gce/github-joway-django-todolist-demo-api:0565c90af7d5f3bc99cfa10d8e23a71abe1d4165
+        name: todolist-static
+        ports:
+        - containerPort: 80
+          name: static
+          protocol: TCP
+      volumes:
+      - hostPath:
+          path: /home/db
+        name: db
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: todolist-web
+  name: todolist-web
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todolist-web
+  template:
+    metadata:
+      labels:
+        app: todolist-web
+    spec:
+      containers:
+      - env:
+        - name: NODE_ENV
+          value: production
+        image: gcr.io/jcloud-gce/github-joway-django-todolist-demo-web:0565c90af7d5f3bc99cfa10d8e23a71abe1d4165
+        name: todolist-web
+        ports:
+        - containerPort: 80
+          name: web
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    kubernetes.io/name: todolist-api
+  name: todolist-api-svc
+  namespace: app
+spec:
+  ports:
+  - port: 8000
+    name: api
+    targetPort: 8000
+  - port: 80
+    name: static
+    targetPort: 8080
+  selector:
+    app: todolist-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    kubernetes.io/name: todolist-web
+  name: todolist-web-svc
+  namespace: app
+spec:
+  ports:
+  - port: 80
+    name: web
+    targetPort: 80
+  selector:
+    app: todolist-web
