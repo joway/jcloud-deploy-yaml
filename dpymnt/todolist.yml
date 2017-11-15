@@ -21,7 +21,7 @@ spec:
           value: API
         - name: SQLITE3_LOCATION
           value: /db
-        image: gcr.io/jcloud-gce/github-joway-django-todolist-demo-api:0565c90af7d5f3bc99cfa10d8e23a71abe1d4165
+        image: gcr.io/jcloud-gce/github-joway-django-todolist-demo-api:31764d6718d9dacf95a8ac944181a584a360606a
         name: todolist-api
         ports:
         - containerPort: 8000
@@ -33,7 +33,7 @@ spec:
       - env:
         - name: MODE
           value: STATIC
-        image: gcr.io/jcloud-gce/github-joway-django-todolist-demo-api:0565c90af7d5f3bc99cfa10d8e23a71abe1d4165
+        image: gcr.io/jcloud-gce/github-joway-django-todolist-demo-api:31764d6718d9dacf95a8ac944181a584a360606a
         name: todolist-static
         ports:
         - containerPort: 80
@@ -86,7 +86,7 @@ spec:
     targetPort: 8000
   - port: 80
     name: static
-    targetPort: 8080
+    targetPort: 80
   selector:
     app: todolist-api
 ---

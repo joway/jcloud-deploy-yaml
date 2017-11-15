@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prerender-service
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prerender-service
+  template:
+    metadata:
+      labels:
+        app: prerender-service
+    spec:
+      containers:
+      - image: joway/prerender-service
+        imagePullPolicy: IfNotPresent
+        name: prerender-service
+        ports:
+        - name: web
+          containerPort: 3000
+          protocol: TCP
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prerender-service-svc
+  namespace: app
+spec:
+  selector:
+    app: prerender-service
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
