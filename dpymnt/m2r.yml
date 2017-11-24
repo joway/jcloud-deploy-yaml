@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: nginx-gateway
+  name: m2r
   namespace: app
 spec:
   strategy:
@@ -9,24 +9,33 @@ spec:
       maxSurge: 50%
       maxUnavailable: 0
     type: RollingUpdate
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: nginx-gateway
+      app: m2r
   template:
     metadata:
       labels:
-        app: nginx-gateway
+        app: m2r
     spec:
       containers:
-      - image: gcr.io/jcloud-gce/github-joway-nginx:e6f282426e301d4d41d3740e80930381200b3482
+      - image: gcr.io/jcloud-gce/github-joway-m2r:1359847566db6124c05ab56d9c302498cc311d96
         imagePullPolicy: IfNotPresent
-        name: nginx-gateway
+        name: m2r
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
         ports:
-        - name: https
-          containerPort: 443
-          protocol: TCP
-        - name: http
+        - name: web
           containerPort: 80
           protocol: TCP
         resources: {}
@@ -34,19 +43,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-gateway-svc
+  name: m2r-svc
   namespace: app
 spec:
   selector:
-    app: nginx-gateway
+    app: m2r
   ports:
   - name: http
     port: 80
     targetPort: 80
-    nodePort: 30080
   - name: https
     port: 443
-    targetPort: 443
-    nodePort: 30443
-  type: NodePort
-# docker run -d -p 80:80 -p 443:443 --restart=always --network=host joway/nginx-tcp-proxy:v2.0
+    targetPort: 80

@@ -1,22 +1,27 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: sh-mark
+  name: nginx-forward-proxy
   namespace: app
 spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 0
+    type: RollingUpdate
   replicas: 1
   selector:
     matchLabels:
-      app: sh-mark
+      app: nginx-forward-proxy
   template:
     metadata:
       labels:
-        app: sh-mark
+        app: nginx-forward-proxy
     spec:
       containers:
-      - image: gcr.io/jcloud-gce/github-joway-sh-mark:3ce26bad081100cdc900d065eea7ccc5e2b1bb76
+      - image: gcr.io/jcloud-gce/github-joway-nginx-forward-proxy:78a9a48655709900881e393bf8a8b1dd13ff5c31
         imagePullPolicy: IfNotPresent
-        name: sh-mark
+        name: nginx-forward-proxy
         readinessProbe:
           httpGet:
             path: /
@@ -38,15 +43,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sh-mark-svc
+  name: nginx-forward-proxy-svc
   namespace: app
 spec:
   selector:
-    app: sh-mark
+    app: nginx-forward-proxy
   ports:
   - name: http
     port: 80
-    targetPort: 80
-  - name: https
-    port: 443
     targetPort: 80

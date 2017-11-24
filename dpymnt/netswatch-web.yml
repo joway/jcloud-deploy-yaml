@@ -4,6 +4,11 @@ metadata:
   name: netswatch-web
   namespace: app
 spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 0
+    type: RollingUpdate
   replicas: 1
   selector:
     matchLabels:
@@ -14,7 +19,7 @@ spec:
         app: netswatch-web
     spec:
       containers:
-      - image: gcr.io/jcloud-gce/github-joway-netswatch-web:54038364c6e2caedfe5d0c377e599db9c011b84b
+      - image: gcr.io/jcloud-gce/github-joway-netswatch-web:2b022deec800435ddb5628cc3a366250eb882302
         imagePullPolicy: IfNotPresent
         name: netswatch-web
         ports:

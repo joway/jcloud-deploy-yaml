@@ -4,6 +4,11 @@ metadata:
   name: homepage
   namespace: app
 spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 0
+    type: RollingUpdate
   replicas: 1
   selector:
     matchLabels:
@@ -14,7 +19,7 @@ spec:
         app: homepage
     spec:
       containers:
-      - image: gcr.io/jcloud-gce/github-joway-homepage:893d23eb7f157245310d33f4c8e04e4b43d8ac0c
+      - image: gcr.io/jcloud-gce/github-joway-homepage:09ba8f518cb84bbc221a0584fc21bbb35f6ddc4e
         imagePullPolicy: IfNotPresent
         name: homepage
         readinessProbe:

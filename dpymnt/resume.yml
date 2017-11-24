@@ -14,7 +14,7 @@ spec:
         app: resume
     spec:
       containers:
-      - image: gcr.io/jcloud-gce/github-joway-resume:e04f3fbe278bd32535e006ba121956a60aae5f4f
+      - image: gcr.io/jcloud-gce/github-joway-resume:1b70ed6493395b27237284fa040bb5842627868d
         imagePullPolicy: IfNotPresent
         name: resume
         readinessProbe:
